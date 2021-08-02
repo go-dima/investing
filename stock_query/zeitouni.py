@@ -37,7 +37,7 @@ def demo():
 
 def high_low(stock, time_period: str):
     history = stock.history(period=time_period)
-    return max(history['Close']), min(history['Close'])
+    return f"{max(history['Close']):.3f}, {min(history['Close']):.3f}"
 
 
 def change(stock, time_period: str):
@@ -51,7 +51,7 @@ def change(stock, time_period: str):
 def print_stock_history(stock, time_period: str):
     change_over_time = change(stock, time_period)
     percent_with_color = rg(f"{change_over_time[0]:.3f}%")
-    change_over_time_display = f"{percent_with_color}, from {change_over_time[1]} to {change_over_time[2]}"
+    change_over_time_display = f"{percent_with_color}, from {change_over_time[1]:.3f} to {change_over_time[2]:.3f}"
     print(b(time_period), change_over_time_display, f"H/L: {high_low(stock, time_period)}")
 
 
