@@ -18,7 +18,7 @@ class StockEx(Enum):
 
 
 price_getter = {
-    StockEx.NY: lambda tick: yf.Ticker(tick).info['previousClose'],
+    StockEx.NY: lambda tick: yf.Ticker(tick).info['regularMarketPrice'],
     StockEx.TLV: lambda tick: get_tlv_quote(tick)
 }
 
