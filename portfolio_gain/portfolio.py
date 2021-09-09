@@ -34,10 +34,11 @@ class Holding:
         self.price: float = kwargs["Price"]
         self.usd_ils: float = kwargs["Usd2Ils"]
         self.ils_buy_price: float = (self.price * self.usd_ils * self.amount) / self._to_shekel
-        self.ils_current_price: float = (self.current_price * self._to_nis * self.amount) / self._to_shekel
-        self.change: float = self.current_price - self.price
-        self.real_ils_change: float = self.ils_current_price - self.ils_buy_price
-        self.ils_pct_change: float = (self.real_ils_change / self.ils_buy_price) * 100
+
+        self.ils_current_price: float
+        self.change: float
+        self.real_ils_change: float
+        self.ils_pct_change: float
 
     def __str__(self) -> str:
         display_dict = self.__dict__.copy()
@@ -60,6 +61,22 @@ class Holding:
     @property
     def current_price(self):
         return price_getter[self.Se](self.ticker)
+
+    @property
+    def ils_current_price(self):
+        return (self.current_price * self._to_nis * self.amount) / self._to_shekel
+
+    @property
+    def change(self):
+        return self.current_price - self.price
+
+    @property
+    def real_ils_change(self):
+        return self.ils_current_price - self.ils_buy_price
+
+    @property
+    def ils_pct_change(self):
+        return (self.real_ils_change / self.ils_buy_price) * 100
 
 
 class Portfolio:
