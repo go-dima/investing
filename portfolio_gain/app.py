@@ -2,6 +2,7 @@ import threading
 import datetime
 import pytz
 import pandas as pd
+import time
 from display_helpers import repr_float
 from flask import Flask
 from portfolio import Portfolio
@@ -18,11 +19,16 @@ def eval_portfolio():
     global last_run
     global portfolio_evaluation
 
-    portfolio.eval()
-    last_run = datetime.datetime.now(pytz.timezone('Asia/Jerusalem')).strftime("%Y-%m-%d %H:%M")
-    portfolio_evaluation = \
-        f"{last_run}<br>" + \
-        f"{repr_float(portfolio.total_currect)}, {repr_float(portfolio.gain)} ({repr_float(portfolio.pct_gain)}%)"
+    while True:
+        print(last_run)
+        portfolio.eval()
+        last_run = datetime.datetime.now(pytz.timezone('Asia/Jerusalem')).strftime("%Y-%m-%d %H:%M")
+        portfolio_evaluation = \
+            f"{last_run}<br>" + \
+            f"{repr_float(portfolio.total_currect)}, {repr_float(portfolio.gain)} ({repr_float(portfolio.pct_gain)}%)"
+        print(last_run)
+        time.sleep(60*8)
+
 
 
 @app.route('/')
@@ -30,7 +36,7 @@ def hello_world():
     return 'Hey, we have Flask in a Docker container!'
 
 
-@app.route('/portfolio')
+@app.route('/perf')
 def get_portfolio():
     return portfolio_evaluation
 
