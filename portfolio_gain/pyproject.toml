@@ -6,7 +6,6 @@ authors = ["Dima <dima.gonikman@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
-pandas = "^1.3.2"
 yfinance = "^0.1.63"
 beautifulsoup4 = "^4.9.3"
 selenium = "^3.141.0"

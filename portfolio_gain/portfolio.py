@@ -3,8 +3,8 @@ from enum import Enum
 from functools import reduce
 from operator import add
 from typing import List
+import csv
 
-import pandas as pd
 import yfinance as yf
 from il_tickers import get_tlv_quote
 from currency_converter import CurrencyConverter
@@ -25,14 +25,14 @@ price_getter = {
 
 
 class Holding:
-    def __init__(self, **kwargs) -> None:
-        self.name: str = kwargs["Name"]
-        self.ticker: str = kwargs["Ticker"]
-        self.Se: StockEx = StockEx(kwargs["SE"])
-        self.amount: int = kwargs["Amount"]
-        self.date: datetime = kwargs["Date"]
-        self.price: float = kwargs["Price"]
-        self.usd_ils: float = kwargs["Usd2Ils"]
+    def __init__(self, raw_data) -> None:
+        self.name: str = raw_data["Name"]
+        self.ticker: str = raw_data["Ticker"]
+        self.Se: StockEx = StockEx(raw_data["SE"])
+        self.amount: int = int(raw_data["Amount"])
+        self.date: datetime = raw_data["Date"]
+        self.price: float = float(raw_data["Price"])
+        self.usd_ils: float = float(raw_data["Usd2Ils"])
         self.ils_buy_price: float = (self.price * self.usd_ils * self.amount) / self._to_shekel
 
         self.ils_current_price: float
@@ -80,8 +80,10 @@ class Holding:
 
 
 class Portfolio:
-    def __init__(self, df: pd.DataFrame) -> None:
-        self.holdings: List[Holding] = [Holding(**row.to_dict()) for index, row in df.iterrows()]
+    def __init__(self, filename) -> None:
+        with open(filename) as csv_file:
+            csv_reader = csv.DictReader(csv_file, delimiter=',')
+            self.holdings: List[Holding] = [Holding(row) for row in csv_reader]
         self.total_buy: float
         self.total_currect: float
         self.gain: float
@@ -98,8 +100,7 @@ class Portfolio:
 
 
 if __name__ == "__main__":
-    df = pd.read_csv("portfolio.csv")
-    portfolio = Portfolio(df)
+    portfolio = Portfolio('portfolio.csv')
     portfolio.eval()
 
     for holding in portfolio.holdings:
