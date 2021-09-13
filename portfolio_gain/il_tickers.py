@@ -17,7 +17,7 @@ def Browser():
     options.add_argument('--no-sandbox')
     options.add_argument('--disable-dev-shm-usage')
     options.add_argument('--disable-gpu')
-    chrome = webdriver.Chrome(executable_path='./chromedriver', options=options)
+    chrome = webdriver.Chrome(options=options)
     yield chrome
     chrome.quit()
 

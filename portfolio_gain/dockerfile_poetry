@@ -1,0 +1,26 @@
+FROM python:3.8
+
+ENV CRYPTOGRAPHY_DONT_BUILD_RUST=1
+
+RUN apt-get update -y && apt-get upgrade -y
+RUN python -m pip install --upgrade pip
+RUN python -m pip install poetry
+RUN python -m pip install --ignore-installed idna
+
+ENV chromedriver_version="90.0.4430.24"
+RUN wget --no-verbose -O /tmp/chromedriver.zip https://chromedriver.storage.googleapis.com/${chromedriver_version}/chromedriver_linux64.zip
+RUN apt-get install chromium=90.0.4430.212-1 -y
+RUN unzip /tmp/chromedriver.zip -d app
+
+# We copy just the requirements.txt first to leverage Docker cache
+COPY ./pyproject.toml ./poetry.lock app/
+
+WORKDIR /app
+RUN poetry config virtualenvs.create false
+RUN poetry install --no-interaction
+COPY app.py .
+COPY display_helpers.py il_tickers.py portfolio.py /app/
+COPY portfolio.csv .
+
+ENTRYPOINT [ "python" ]
+CMD [ "app.py" ]

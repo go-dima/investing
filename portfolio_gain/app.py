@@ -1,7 +1,6 @@
 import threading
 import datetime
 import pytz
-import pandas as pd
 import time
 from display_helpers import repr_float
 from flask import Flask
@@ -20,14 +19,12 @@ def eval_portfolio():
     global portfolio_evaluation
 
     while True:
-        print(last_run)
         portfolio.eval()
         last_run = datetime.datetime.now(pytz.timezone('Asia/Jerusalem')).strftime("%Y-%m-%d %H:%M")
         portfolio_evaluation = \
             f"{last_run}<br>" + \
             f"{repr_float(portfolio.total_currect)}, {repr_float(portfolio.gain)} ({repr_float(portfolio.pct_gain)}%)"
-        print(last_run)
-        time.sleep(60*8)
+        time.sleep(60*60*8)
 
 
 @app.route('/')
@@ -41,8 +38,7 @@ def get_portfolio():
 
 
 if __name__ == '__main__':
-    df = pd.read_csv("portfolio.csv")
-    portfolio = Portfolio(df)
+    portfolio = Portfolio("portfolio.csv")
     t1 = threading.Thread(target=eval_portfolio)
     t1.start()
     app.run(debug=True, host='0.0.0.0')

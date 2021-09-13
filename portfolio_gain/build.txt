@@ -1,0 +1,4 @@
+docker buildx build --platform=linux/arm/v7 -t portfolio-gain-armv7:latest -f dockerfile .
+docker save portfolio-gain-armv7:latest -o portfolio-gain-armv7.tar
+copy
+docker load --input portfolio-gain-armv7.tar
