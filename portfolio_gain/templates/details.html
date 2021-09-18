@@ -1,0 +1,26 @@
+<div class='table-responsive'>
+    <table class='table' id="holdings">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Ticker</th>
+            <th>Amount</th>
+            <th>Current Value</th>
+            <th>ILS Change</th>
+            <th>ILS PCT Change</th>
+          </tr>
+        </thead>
+        <tbody>
+            {% for holding in portfolio['portfolio'].holdings %}
+            <tr>
+                <td>{{ holding.name }}</td>
+                <td>{{ holding.ticker }} ({{ holding.Se }})</td>
+                <td>{{ holding.amount | format_int }}</td>
+                <td>{{ holding.current_price }} ({{ holding.price }})</td>
+                <td>{{ holding.real_ils_change | format_float }}</td>
+                <td>{{ holding.ils_pct_change | format_float }}%</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>

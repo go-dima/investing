@@ -34,11 +34,10 @@ class Holding:
         self.price: float = float(raw_data["Price"])
         self.usd_ils: float = float(raw_data["Usd2Ils"])
         self.ils_buy_price: float = (self.price * self.usd_ils * self.amount) / self._to_shekel
-
-        self.ils_current_price: float
-        self.change: float
-        self.real_ils_change: float
-        self.ils_pct_change: float
+        self.ils_current_price: float = 0.0
+        self.change: float = 0.0
+        self.real_ils_change: float = 0.0
+        self.ils_pct_change: float = 0.0
 
     def __str__(self) -> str:
         display_dict = self.__dict__.copy()
@@ -50,6 +49,13 @@ class Holding:
         display_dict["ils_pct_change"] = repr_float(self.ils_pct_change)
         return str(display_dict)
 
+    def eval(self):
+        self.current_price = price_getter[self.Se](self.ticker)
+        self.ils_current_price = (self.current_price * self._to_nis * self.amount) / self._to_shekel
+        self.change = self.current_price - self.price
+        self.real_ils_change = self.ils_current_price - self.ils_buy_price
+        self.ils_pct_change = (self.real_ils_change / self.ils_buy_price) * 100
+
     @property
     def _to_shekel(self):
         return 100 if self.Se == StockEx.TLV else 1
@@ -57,26 +63,6 @@ class Holding:
     @property
     def _to_nis(self):
         return 1 if self.Se == StockEx.TLV else usd2ils_rate
-
-    @property
-    def current_price(self):
-        return price_getter[self.Se](self.ticker)
-
-    @property
-    def ils_current_price(self):
-        return (self.current_price * self._to_nis * self.amount) / self._to_shekel
-
-    @property
-    def change(self):
-        return self.current_price - self.price
-
-    @property
-    def real_ils_change(self):
-        return self.ils_current_price - self.ils_buy_price
-
-    @property
-    def ils_pct_change(self):
-        return (self.real_ils_change / self.ils_buy_price) * 100
 
 
 class Portfolio:
@@ -93,6 +79,7 @@ class Portfolio:
         if not self.holdings:
             return
 
+        list(map(lambda h: h.eval(), self.holdings))
         self.total_buy = reduce(add, [h.ils_buy_price for h in self.holdings])
         self.total_currect = reduce(add, [h.ils_current_price for h in self.holdings])
         self.gain = self.total_currect - self.total_buy

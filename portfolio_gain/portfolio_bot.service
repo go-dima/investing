@@ -1,0 +1,13 @@
+[Unit]
+Description=Portfolio Bot Service
+After=multi-user.target
+
+[Service]
+Type=simple
+Restart=always
+WorkingDirectory=/home/dimag/investing/portfolio_gain
+ExecStartPre=/bin/sleep 3
+ExecStart=/usr/bin/python3.8 /home/dimag/portfolio_gain/portfolio_bot.py
+
+[Install]
+WantedBy=multi-user.target
