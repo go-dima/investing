@@ -4,10 +4,14 @@ import datetime
 import pytz
 import time
 from flask import Flask, render_template
+from flask_bootstrap import Bootstrap
+
 from display_helpers import repr_float, repr_int
 from portfolio import Portfolio
 
 app = Flask(__name__, template_folder="templates")
+bootstrap = Bootstrap(app)
+
 portfolios = {}
 
 
@@ -19,6 +23,15 @@ def format_float(value):
 @app.template_filter()
 def format_int(value):
     return repr_int(value)
+
+
+def render(template, **kwargs):
+    defaults = {
+        "title": "Home",
+        "template_name_or_list": template,
+        "portfolio_names": portfolios.keys()
+    }
+    return render_template(**{**defaults, **kwargs})
 
 
 def eval_portfolio():
@@ -33,20 +46,21 @@ def eval_portfolio():
 
 
 @app.route('/')
-def hello_world():
-    return 'Hey, we have Flask in a Docker container!'
+@app.route('/home')
+def home():
+    return render("home.html", portfolios=portfolios)
 
 
 @app.route('/port')
 @app.route('/port/<portfolio_id>')
 def get_portfolio(portfolio_id: str = 'portfolio'):
-    return render_template("details.html", portfolio=portfolios[portfolio_id])
+    return render("details.html", title=portfolio_id, portfolio=portfolios[portfolio_id])
 
 
 @app.route('/perf')
 @app.route('/perf/<portfolio_id>')
 def get_performance(portfolio_id: str = 'portfolio'):
-    return render_template("summary.html", portfolio=portfolios[portfolio_id])
+    return render("summary.html", title=portfolio_id, portfolio=portfolios[portfolio_id])
 
 
 @app.route("/api/perf")

@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block app_content %}
+<div class='table-responsive'>
+    <table class='table' id="holdings">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Value</th>
+            <th>Change</th>
+            <th>Last Run</th>
+          </tr>
+        </thead>
+        <tbody>
+            {% for name, portfolio in portfolios.items() %}
+            <tr>
+                <td>{{ name }}</td>
+                <td>{{ portfolio['portfolio_evaluation'].split(' ', 1)[0] }}</td>
+                <td>{{ portfolio['portfolio_evaluation'].split(' ', 1)[1] }}</td>
+                <td>{{ portfolio['last_run'] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
