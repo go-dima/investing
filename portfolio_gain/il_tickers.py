@@ -30,10 +30,14 @@ def get_tlv_quote(ticker: str):
             try:
                 browser.get(base_url + ticker)
                 soup = BeautifulSoup(browser.page_source, 'html.parser')
-                quote = soup.find("div", class_="num").get_text()
-                return float(quote)
+                quote = soup.find(class_="num").get_text().replace(',', '')
+                is_ag = len(quote) > 4 and '.' not in quote
+                return float(quote) if not is_ag else float(quote)/100
             except WebDriverException:
                 pass
+            except Exception as e:
+                logger.error(f"Failed to get {ticker}\n", e)
+                return 0
 
 
 if __name__ == "__main__":

@@ -2,11 +2,17 @@ from colorama import Fore, Style
 
 
 def repr_float(num: float):
-    return f"{num:,.2f}"
+    try:
+        return f"{num:,.2f}"
+    except TypeError:
+        return "nan"
 
 
 def repr_int(num: int):
-    return f"{num:,}"
+    try:
+        return f"{num:,}"
+    except TypeError:
+        return "nan"
 
 
 def rg(text):

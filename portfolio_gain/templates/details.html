@@ -14,6 +14,7 @@
             <th>Name</th>
             <th>Ticker</th>
             <th>Amount</th>
+            <th>Total ILS Value</th>
             <th>Current Value</th>
             <th>ILS Change</th>
             <th>ILS PCT Change</th>
@@ -25,6 +26,7 @@
                 <td>{{ holding.name }}</td>
                 <td>{{ holding.ticker }} ({{ holding.Se.value }})</td>
                 <td>{{ holding.amount | format_int }}</td>
+                <td>{{ holding.ils_current_price | format_float }}</td>
                 <td>{{ holding.current_price | format_float }} ({{ holding.price | format_float }})</td>
                 <td>{{ holding.real_ils_change | format_float }}</td>
                 <td>{{ holding.ils_pct_change | format_float }}%</td>

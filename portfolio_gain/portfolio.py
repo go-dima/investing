@@ -11,6 +11,8 @@ from currency_converter import CurrencyConverter
 from display_helpers import repr_float, repr_int, rg
 
 usd2ils_rate = CurrencyConverter().convert(1, 'USD', 'ILS')
+logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 class StockEx(Enum):
@@ -32,8 +34,8 @@ class Holding:
         self.amount: int = int(raw_data["Amount"])
         self.date: datetime = raw_data["Date"]
         self.price: float = float(raw_data["Price"])
-        self.usd_ils: float = float(raw_data["Usd2Ils"])
-        self.ils_buy_price: float = (self.price * self.usd_ils * self.amount) / self._to_shekel
+        self.ils_ratio: float = float(raw_data["Usd2Ils"])
+        self.ils_buy_price: float = (self.price * self._to_nis * self.amount) / self._to_shekel
         self.ils_current_price: float = 0.0
         self.change: float = 0.0
         self.real_ils_change: float = 0.0
@@ -50,15 +52,20 @@ class Holding:
         return str(display_dict)
 
     def eval(self):
+        try:
         self.current_price = price_getter[self.Se](self.ticker)
         self.ils_current_price = (self.current_price * self._to_nis * self.amount) / self._to_shekel
         self.change = self.current_price - self.price
         self.real_ils_change = self.ils_current_price - self.ils_buy_price
         self.ils_pct_change = (self.real_ils_change / self.ils_buy_price) * 100
+            logger.info(f"{self.name}: #{self.amount}, {repr_float(self.real_ils_change)}({repr_float(self.ils_pct_change)})")
+        except Exception as e:
+            print(e)
+            print(self.ticker, self.current_price)
 
     @property
     def _to_shekel(self):
-        return 100 if self.Se == StockEx.TLV else 1
+        return self.ils_ratio if self.Se == StockEx.TLV else 1
 
     @property
     def _to_nis(self):
@@ -70,6 +77,7 @@ class Portfolio:
         with open(filename) as csv_file:
             csv_reader = csv.DictReader(csv_file, delimiter=',')
             self.holdings: List[Holding] = [Holding(row) for row in csv_reader]
+        self.name = filename
         self.total_buy: float
         self.total_currect: float
         self.gain: float
@@ -84,6 +92,7 @@ class Portfolio:
         self.total_currect = reduce(add, [h.ils_current_price for h in self.holdings])
         self.gain = self.total_currect - self.total_buy
         self.pct_gain = (self.gain / self.total_buy) * 100
+        logger.info(f"{self.name} completed")
 
 
 if __name__ == "__main__":
