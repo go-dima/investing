@@ -1,5 +1,6 @@
+docker buildx build --platform=linux/arm/v7 -t portfolio-gain-base:latest_armv7 -f dockerfile.base .
 poetry export -f requirements.txt --output requirements.txt --without-hashes
-docker buildx build --platform=linux/arm/v7 -t portfolio-gain-armv7:latest -f dockerfile .
-docker save portfolio-gain-armv7:latest -o portfolio-gain-armv7.tar
+docker buildx build --platform=linux/arm/v7 -t portfolio-gain-app:latest_armv7 -f dockerfile .
+docker save portfolio-gain-app:latest_armv7 -o portfolio-gain-app-armv7.tar
 copy
-docker load --input portfolio-gain-armv7.tar
+docker load --input portfolio-gain-app-armv7.tar

@@ -1,16 +1,8 @@
-FROM python:3.8
+FROM portfolio-gain-armv7:base
 
-RUN apt-get update -y && apt-get upgrade -y
-RUN python -m pip install --upgrade pip
-
-RUN apt-get install chromium=90.0.4430.212-1 -y
-RUN apt-get install chromium-driver=90.0.4430.212-1 -y
-
-# We copy just the requirements.txt first to leverage Docker cache
-COPY requirements.txt app/
-
-WORKDIR /app
+COPY requirements.txt .
 RUN python -m pip install -r requirements.txt
+
 COPY app.py .
 COPY templates templates/
 COPY display_helpers.py il_tickers.py portfolio.py ./
