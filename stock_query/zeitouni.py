@@ -1,15 +1,13 @@
 #!/usr/bin/python3
 
 import yfinance as yf
-import time
 from colorama import Fore, Style
 import argparse
-from typing import List
 
 
 def rg(to_color: str):
     if to_color[0] == '-':
-       return f"{Fore.RED}{to_color}{Style.RESET_ALL}"
+        return f"{Fore.RED}{to_color}{Style.RESET_ALL}"
     return f"{Fore.GREEN}{to_color}{Style.RESET_ALL}"
 
 
@@ -23,6 +21,7 @@ def cyan(text: str):
 
 def yellow(text: str):
     return f"{Fore.YELLOW}{text}{Style.RESET_ALL}"
+
 
 def demo():
     msft = yf.Ticker("MSFT")
@@ -59,9 +58,10 @@ def inspect_ticker(ticker_name: str):
     tikcer_data = yf.Ticker(ticker_name)
     print(cyan(f"{tikcer_data.info['shortName']}"),
           yellow(f"Price: {tikcer_data.info['regularMarketPrice']} ({ticker_name.upper()})"))
-    print('Previous Close', tikcer_data.info['previousClose'])
-    print('50 Day Average', tikcer_data.info['fiftyDayAverage'])
-    print('200 Day Average', tikcer_data.info['twoHundredDayAverage'])
+    print('Previous Close', tikcer_data.info.get('previousClose', None))
+    print('50 Day Average', tikcer_data.info.get('fiftyDayAverage', None))
+    print('200 Day Average', tikcer_data.info.get('twoHundredDayAverage', None))
+
     for time_frame in ["10d", "6mo", "1y", "3y"]:
         print_stock_history(tikcer_data, time_frame)
 
@@ -88,6 +88,6 @@ if __name__ == '__main__':
                 print_stock_history(yf.Ticker(ticker_name), args.custom_period)
             print("-"*20)
     else:
-        for ticker_name in open("stocks.list","r").read().splitlines():
+        for ticker_name in open("stocks.list", "r").read().splitlines():
             inspect_ticker(ticker_name)
             print("-"*20)
