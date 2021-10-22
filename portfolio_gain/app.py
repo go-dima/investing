@@ -34,11 +34,16 @@ def render(template, **kwargs):
     return render_template(**{**defaults, **kwargs})
 
 
+def timestamp_now():
+    return datetime.datetime.now(pytz.timezone('Asia/Jerusalem')).strftime("%Y-%m-%d %H:%M")
+
+
 def eval_portfolio():
     while True:
         for portfolio_data in portfolios.values():
+            portfolio_data["last_run"] = f"Started: {timestamp_now()}"
             portfolio_data["portfolio"].eval()
-            portfolio_data["last_run"] = datetime.datetime.now(pytz.timezone('Asia/Jerusalem')).strftime("%Y-%m-%d %H:%M")
+            portfolio_data["last_run"] = timestamp_now()
             portfolio_data["portfolio_evaluation"] = \
                 f"{repr_float(portfolio_data['portfolio'].total_currect)}" + " " + \
                 f"{repr_float(portfolio_data['portfolio'].gain)} ({repr_float(portfolio_data['portfolio'].pct_gain)}%)"
